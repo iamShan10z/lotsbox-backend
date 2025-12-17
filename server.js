@@ -1,3 +1,18 @@
+const express = require("express");
+const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
+const sharp = require("sharp");
+const http = require("http");
+const { Server } = require("socket.io");
+
+const app = express();               // ✅ MISSING LINE FIXED
+app.use(cors());
+app.use(express.json());
+
+// serve uploaded images
+app.use("/uploads", express.static("uploads"));
+
 /* ======================
    SOCKET.IO CHAT
 ====================== */
@@ -10,7 +25,6 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  /* typing indicator */
   socket.on("typing", (user) => {
     socket.broadcast.emit("typing", user);
   });
@@ -19,7 +33,6 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("stop-typing");
   });
 
-  /* message broadcast */
   socket.on("chat-message", (msg) => {
     io.emit("chat-message", msg);
   });
